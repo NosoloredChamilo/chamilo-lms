@@ -19,6 +19,7 @@ $transferEnable = $plugin->get('transfer_enable');
 $tpvRedsysEnable = $plugin->get('tpv_redsys_enable');
 $commissionsEnable = $plugin->get('commissions_enable');
 $culqiEnable = $plugin->get('culqi_enable');
+$cecabankEnable = $plugin->get('cecabank_enable') === 'true';
 
 if (isset($_GET['action'], $_GET['id'])) {
     if ($_GET['action'] == 'delete_taccount') {
@@ -395,6 +396,68 @@ $culqiForm->addCheckBox('integration', null, $plugin->get_lang('Sandbox'));
 $culqiForm->addButtonSave(get_lang('Save'));
 $culqiForm->setDefaults($plugin->getCulqiParams());
 
+// Cecabank main configuration
+
+$cecabankForm = new FormValidator('cecabank_config');
+
+if ($cecabankForm->validate()) {
+    $cecabankFormValues = $cecabankForm->getSubmitValues();
+
+    $plugin->saveCecabankParameters($cecabankFormValues);
+
+    Display::addFlash(
+        Display::return_message(get_lang('Saved'), 'success')
+    );
+
+    header('Location:'.api_get_self());
+    exit;
+}
+
+$cecabankForm->addText(
+    'merchant_id',
+    $plugin->get_lang('CecaMerchanId'),
+    false,
+    ['cols-size' => [3, 8, 1]]
+);
+$cecabankForm->addText(
+    'acquirer_bin',
+    $plugin->get_lang('CecaAcquirerId'),
+    false,
+    ['cols-size' => [3, 8, 1]]
+);
+$cecabankForm->addText(
+    'terminal_id',
+    $plugin->get_lang('CecaTerminalId'),
+    false,
+    ['cols-size' => [3, 8, 1]]
+);
+$cecabankForm->addText(
+    'cypher',
+    $plugin->get_lang('CecaCypher'),
+    false,
+    ['cols-size' => [3, 8, 1]]
+);
+$cecabankForm->addText(
+    'currency',
+    $plugin->get_lang('CecaCurrency'),
+    false,
+    ['cols-size' => [3, 8, 1]]
+);
+$cecabankForm->addText(
+    'exponent',
+    $plugin->get_lang('CecaExponent'),
+    false,
+    ['cols-size' => [3, 8, 1]]
+);
+$cecabankForm->addText(
+    'supported_payment',
+    $plugin->get_lang('CecaSupportedPayment'),
+    false,
+    ['cols-size' => [3, 8, 1]]
+);
+$cecabankForm->addButtonSave(get_lang('Save'));
+$cecabankForm->setDefaults($plugin->getCecabankParams());
+
 // breadcrumbs
 $interbreadcrumb[] = [
     'url' => api_get_path(WEB_PLUGIN_PATH).'buycourses/index.php',
@@ -419,6 +482,8 @@ $tpl->assign('transfer_enable', $transferEnable);
 $tpl->assign('culqi_enable', $culqiEnable);
 $tpl->assign('tpv_redsys_enable', $tpvRedsysEnable);
 $tpl->assign('tpv_redsys_form', $htmlTpvRedsys);
+$tpl->assign('cecabank_enable', $cecabankEnable);
+$tpl->assign('cecabank_form', $cecabankForm->returnForm());
 
 $content = $tpl->fetch('buycourses/view/paymentsetup.tpl');
 

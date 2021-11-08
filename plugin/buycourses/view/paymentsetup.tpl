@@ -136,3 +136,21 @@
         </div>
     </div>
 {% endif %}
+
+{% if cecabank_enable == "true" %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ 'CecabankConfig'|get_plugin_lang('BuyCoursesPlugin') }}</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-5">
+                    <p>{{ 'InfoCecaBankCredentials'|get_plugin_lang('BuyCoursesPlugin') }}</p>
+                </div>
+                <div class="col-md-7">
+                    {{ cecabank_form }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

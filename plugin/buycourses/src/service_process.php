@@ -46,12 +46,7 @@ $typeSession = $type === BuyCoursesPlugin::SERVICE_TYPE_SESSION;
 $typeFinalLp = $type === BuyCoursesPlugin::SERVICE_TYPE_LP_FINAL_ITEM;
 $queryString = 'i='.$serviceId.'&t='.$type.$additionalQueryString;
 
-if (isset($_REQUEST['c'])) {
-    $couponCode = $_REQUEST['c'];
-    $coupon = $plugin->getCouponServiceByCode($couponCode, $_REQUEST['i']);
-}
-
-$serviceInfo = $plugin->getService($serviceId, $coupon);
+$serviceInfo = $plugin->getService($serviceId);
 $userInfo = api_get_user_info($currentUserId);
 
 $form = new FormValidator('confirm_sale');
@@ -243,63 +238,15 @@ if ($form->validate()) {
     $serviceSaleId = $plugin->registerServiceSale(
         $serviceId,
         $formValues['payment_type'],
-        $infoSelected,
-        $formValues['c']
+        $infoSelected
     );
 
     if ($serviceSaleId !== false) {
         $_SESSION['bc_service_sale_id'] = $serviceSaleId;
-
-        if (isset($formValues['c'])) {
-            $couponSaleId = $plugin->registerCouponServiceSale($serviceSaleId, $formValues['c']);
-            if ($couponSaleId !== false) {
-                $plugin->updateCouponDelivered($formValues['c']);
-                $_SESSION['bc_coupon_id'] = $formValues['c'];
-            }
-        }
-
         header('Location: '.api_get_path(WEB_PLUGIN_PATH).'buycourses/src/service_process_confirm.php');
     }
     exit;
 }
-
-$formCoupon = new FormValidator('confirm_coupon');
-if ($formCoupon->validate()) {
-    $formCouponValues = $formCoupon->getSubmitValues();
-
-    if (!$formCouponValues['coupon_code']) {
-        Display::addFlash(
-            Display::return_message($plugin->get_lang('NeedToAddCouponCode'), 'error', false)
-        );
-        header('Location:'.api_get_self().'?'.$queryString);
-        exit;
-    }
-
-    $coupon = $plugin->getCouponServiceByCode($formCouponValues['coupon_code'], $formCouponValues['i']);
-
-    if ($coupon == null) {
-        Display::addFlash(
-            Display::return_message($plugin->get_lang('CouponNotValid'), 'error', false)
-        );
-        header('Location:'.api_get_self().'?'.$queryString);
-        exit;
-    }
-
-    Display::addFlash(
-        Display::return_message($plugin->get_lang('CouponRedeemed'), 'success', false)
-    );
-
-    header('Location: '.api_get_path(WEB_PLUGIN_PATH).'buycourses/src/service_process.php?i='.$_REQUEST['i'].'&t='.$_REQUEST['t'].'&c='.$formCouponValues['coupon_code']);
-
-    exit;
-}
-$formCoupon->addText('coupon_code', $plugin->get_lang('CouponsCode'), true);
-$formCoupon->addHidden('t', intval($_GET['t']));
-$formCoupon->addHidden('i', intval($_GET['i']));
-if ($coupon != null) {
-    $form->addHidden('c', intval($coupon['id']));
-}
-$formCoupon->addButton('submit', $plugin->get_lang('RedeemCoupon'), 'check', 'success', 'btn-lg pull-right');
 
 // View
 $templateName = $plugin->get_lang('PaymentMethods');
@@ -312,7 +259,6 @@ $tpl = new Template($templateName);
 $tpl->assign('buying_service', true);
 $tpl->assign('service', $serviceInfo);
 $tpl->assign('user', api_get_user_info());
-$tpl->assign('form_coupon', $formCoupon->returnForm());
 $tpl->assign('form', $form->returnForm());
 $content = $tpl->fetch('buycourses/view/service_process.tpl');
 $tpl->assign('content', $content);
