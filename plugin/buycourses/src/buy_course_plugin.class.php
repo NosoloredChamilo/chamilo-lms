@@ -321,27 +321,17 @@ class BuyCoursesPlugin extends Plugin
         $table = self::TABLE_TPV_CECABANK;
         $sql = "CREATE TABLE IF NOT EXISTS $table (
             id int unsigned NOT NULL AUTO_INCREMENT,
+            crypto_key varchar(255) NOT NULL,
             merchant_id varchar(255) NOT NULL,
             acquirer_bin varchar(255) NOT NULL,
             terminal_id varchar(255) NOT NULL,
             cypher varchar(255) NOT NULL,
-            currency varchar(255) NOT NULL,
             exponent varchar(255) NOT NULL,
             supported_payment varchar(255) NOT NULL,
+            url varchar(255) NOT NULL,
             PRIMARY KEY (id)
         )";
-
-        /*$sql = "SELECT * FROM $table";
-        $res = Database::query($sql);
-        if (Database::num_rows($res) == 0) {
-            Database::insert($table, [
-                'terminal_id' => '00000003',
-                'cypher' => 'SHA2',
-                'currency' => '978',
-                'exponent' => 2,
-                'supported_payment' => 'SSL',
-            ]);
-        }*/
+        Database::query($sql);
 
         Display::addFlash(
             Display::return_message(
@@ -1323,6 +1313,7 @@ class BuyCoursesPlugin extends Plugin
             self::PAYMENT_TYPE_TRANSFER => $this->get_lang('BankTransfer'),
             self::PAYMENT_TYPE_CULQI => 'Culqi',
             self::PAYMENT_TYPE_TPV_REDSYS => $this->get_lang('TpvPayment'),
+            self::PAYMENT_TYPE_TPV_CECABANK => $this->get_lang('TpvCecabank'),
         ];
     }
 
@@ -2840,7 +2831,6 @@ class BuyCoursesPlugin extends Plugin
                 'acquirer_bin' => $params['acquirer_bin'],
                 'terminal_id' => $params['terminal_id'],
                 'cypher' => $params['cypher'],
-                'currency' => $params['currency'],
                 'exponent' => $params['exponent'],
                 'supported_payment' => $params['supported_payment'],
             ],
@@ -2996,19 +2986,18 @@ class BuyCoursesPlugin extends Plugin
         $cecabankParams = $this->getCecabankParams();
         $signature = $cecabankParams['crypto_key']
         .$cecabankParams['merchant_id']
-        .$cecabankParams['adquierer_bin']
+        .$cecabankParams['acquirer_bin']
         .$cecabankParams['terminal_id']
         .$saleReference
         .$price * 100
-        .$cecabankParams['currency']
+        .'978'
         .$cecabankParams['exponent']
         .$cecabankParams['cypher']
         .$urlOk
-        .$urlKo
-        .'Exencion_SCA';
+        .$urlKo;
 
         $sha256 = hash('sha256', $signature);
-        $signature = strtoupper($sha256);
+        $signature = strtolower($sha256);
 
         return $signature;
     }

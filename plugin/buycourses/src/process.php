@@ -21,8 +21,9 @@ $paypalEnabled = $plugin->get('paypal_enable') === 'true';
 $transferEnabled = $plugin->get('transfer_enable') === 'true';
 $culqiEnabled = $plugin->get('culqi_enable') === 'true';
 $tpvRedsysEnable = $plugin->get('tpv_redsys_enable') === 'true';
+$tpvCecabankEnable = $plugin->get('cecabank_enable') === 'true';
 
-if (!$paypalEnabled && !$transferEnabled && !$culqiEnabled && !$tpvRedsysEnable) {
+if (!$paypalEnabled && !$transferEnabled && !$culqiEnabled && !$tpvRedsysEnable && !$tpvCecabankEnable) {
     api_not_allowed(true);
 }
 
@@ -30,6 +31,7 @@ if (!isset($_REQUEST['t'], $_REQUEST['i'])) {
     api_not_allowed(true);
 }
 
+$currency = $plugin->getSelectedCurrency();
 $buyingCourse = intval($_REQUEST['t']) === BuyCoursesPlugin::PRODUCT_TYPE_COURSE;
 $buyingSession = intval($_REQUEST['t']) === BuyCoursesPlugin::PRODUCT_TYPE_SESSION;
 $queryString = 'i='.intval($_REQUEST['i']).'&t='.intval($_REQUEST['t']);
@@ -86,6 +88,10 @@ if (!$culqiEnabled) {
 
 if (!$tpvRedsysEnable || !file_exists(api_get_path(SYS_PLUGIN_PATH).'buycourses/resources/apiRedsys.php')) {
     unset($paymentTypesOptions[BuyCoursesPlugin::PAYMENT_TYPE_TPV_REDSYS]);
+}
+
+if (!$tpvCecabankEnable || $currency != 'eur') {
+    unset($paymentTypesOptions[BuyCoursesPlugin::PAYMENT_TYPE_TPV_CECABANK]);
 }
 
 $count = count($paymentTypesOptions);

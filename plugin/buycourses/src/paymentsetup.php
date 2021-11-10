@@ -415,6 +415,18 @@ if ($cecabankForm->validate()) {
 
 $cecabankForm->addText(
     'merchant_id',
+    $plugin->get_lang('CecaSecret'),
+    false,
+    ['cols-size' => [3, 8, 1]]
+);
+$cecabankForm->addText(
+    'merchant_id',
+    $plugin->get_lang('CecaUrl'),
+    false,
+    ['cols-size' => [3, 8, 1]]
+);
+$cecabankForm->addText(
+    'merchant_id',
     $plugin->get_lang('CecaMerchanId'),
     false,
     ['cols-size' => [3, 8, 1]]
@@ -434,12 +446,6 @@ $cecabankForm->addText(
 $cecabankForm->addText(
     'cypher',
     $plugin->get_lang('CecaCypher'),
-    false,
-    ['cols-size' => [3, 8, 1]]
-);
-$cecabankForm->addText(
-    'currency',
-    $plugin->get_lang('CecaCurrency'),
     false,
     ['cols-size' => [3, 8, 1]]
 );

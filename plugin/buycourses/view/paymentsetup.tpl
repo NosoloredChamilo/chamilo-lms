@@ -144,10 +144,7 @@
         </div>
         <div class="panel-body">
             <div class="row">
-                <div class="col-md-5">
-                    <p>{{ 'InfoCecaBankCredentials'|get_plugin_lang('BuyCoursesPlugin') }}</p>
-                </div>
-                <div class="col-md-7">
+                <div class="col-md-12">
                     {{ cecabank_form }}
                 </div>
             </div>
