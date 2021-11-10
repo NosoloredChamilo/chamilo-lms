@@ -2827,12 +2827,14 @@ class BuyCoursesPlugin extends Plugin
         return Database::update(
             Database::get_main_table(self::TABLE_TPV_CECABANK),
             [
+                'crypto_key' => $params['crypto_key'],
                 'merchant_id' => $params['merchart_id'],
                 'acquirer_bin' => $params['acquirer_bin'],
                 'terminal_id' => $params['terminal_id'],
                 'cypher' => $params['cypher'],
                 'exponent' => $params['exponent'],
                 'supported_payment' => $params['supported_payment'],
+                'url' => $params['url'],
             ],
             ['id = ?' => 1]
         );

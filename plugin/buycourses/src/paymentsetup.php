@@ -414,13 +414,13 @@ if ($cecabankForm->validate()) {
 }
 
 $cecabankForm->addText(
-    'merchant_id',
+    'crypto_key',
     $plugin->get_lang('CecaSecret'),
     false,
     ['cols-size' => [3, 8, 1]]
 );
 $cecabankForm->addText(
-    'merchant_id',
+    'url',
     $plugin->get_lang('CecaUrl'),
     false,
     ['cols-size' => [3, 8, 1]]
