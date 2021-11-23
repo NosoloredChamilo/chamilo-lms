@@ -90,7 +90,7 @@ if (!$tpvRedsysEnable || !file_exists(api_get_path(SYS_PLUGIN_PATH).'buycourses/
     unset($paymentTypesOptions[BuyCoursesPlugin::PAYMENT_TYPE_TPV_REDSYS]);
 }
 
-if (!$tpvCecabankEnable || $currency != 'eur') {
+if (!$tpvCecabankEnable ||  strtolower($currency['iso_code']) != 'eur') {
     unset($paymentTypesOptions[BuyCoursesPlugin::PAYMENT_TYPE_TPV_CECABANK]);
 }
 

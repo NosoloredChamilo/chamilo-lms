@@ -1132,6 +1132,25 @@ class BuyCoursesPlugin extends Plugin
     }
 
     /**
+     * Get sale data by reference.
+     *
+     * @param int $reference The sale ID
+     *
+     * @return array
+     */
+    public function getSaleFromReference($reference)
+    {
+        return Database::select(
+            '*',
+            Database::get_main_table(self::TABLE_SALE),
+            [
+                'where' => ['reference = ?' => $reference],
+            ],
+            'first'
+        );
+    } 
+
+    /**
      * Get a list of sales by the payment type.
      *
      * @param int $paymentType The payment type to filter (default : Paypal)

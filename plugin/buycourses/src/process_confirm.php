@@ -541,7 +541,7 @@ switch ($sale['payment_type']) {
             echo '<input type="hidden" name="Cifrado" value="'.$cecabankParams['cypher'].'" />';
             echo '<input type="hidden" name="Num_operacion" value="'.$sale['reference'].'" />';
             echo '<input type="hidden" name="Importe" value="'.($sale['price'] * 100).'" />';
-            echo '<input type="hidden" name="TipoMoneda" value="'.$cecabankParams['currency'].'" />';
+            echo '<input type="hidden" name="TipoMoneda" value="978" />';
             echo '<input type="hidden" name="Exponente" value="'.$cecabankParams['exponent'].'" />';
             echo '<input type="hidden" name="Pago_soportado" value="'.$cecabankParams['supported_payment'].'" />';
             echo '</form>';
