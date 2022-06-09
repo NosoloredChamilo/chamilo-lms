@@ -342,10 +342,10 @@ class Template
     /**
      * Shortcut to display a 1 col layout (index.php).
      * */
-    public function display_one_col_template()
+    public function display_one_col_template(bool $clearFlashMessages = true)
     {
         $tpl = $this->get_template('layout/layout_1_col.tpl');
-        $this->display($tpl);
+        $this->display($tpl, $clearFlashMessages);
     }
 
     /**
@@ -764,6 +764,16 @@ class Template
             "select2/dist/js/i18n/$isoCode.js",
             'js-cookie/src/js.cookie.js',
         ];
+
+        if ($renderers = api_get_configuration_sub_value('video_player_renderers/renderers')) {
+            foreach ($renderers as $renderName) {
+                if ('youtube' === $renderName) {
+                    continue;
+                }
+
+                $bowerJsFiles[] = "mediaelement/build/renderers/$renderName.min.js";
+            }
+        }
 
         $viewBySession = api_get_setting('my_courses_view_by_session') === 'true';
 

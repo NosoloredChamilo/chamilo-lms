@@ -2086,13 +2086,14 @@ class Display
      *
      * @return string
      */
-    public static function tip($text, $tip)
+    public static function tip($text, $tip, string $tag = 'span')
     {
         if (empty($tip)) {
             return $text;
         }
 
-        return self::span(
+        return self::tag(
+            $tag,
             $text,
             ['class' => 'boot-tooltip', 'title' => strip_tags($tip)]
         );
@@ -2909,6 +2910,17 @@ HTML;
             $videoPluginCssFiles .= '{type: "stylesheet", src: "'.$webJsPath.$file.'"},';
         }
 
+        if ($renderers = api_get_configuration_sub_value('video_player_renderers/renderers')) {
+            foreach ($renderers as $renderName) {
+                if ('youtube' === $renderName) {
+                    continue;
+                }
+
+                $file = $webPublicPath."assets/mediaelement/build/renderers/$renderName.min.js";
+                $videoPluginFiles .= '{type: "script", src: "'.$file.'"},';
+            }
+        }
+
         $translateHtml = '';
         $translate = api_get_configuration_value('translate_html');
         if ($translate) {
@@ -3017,5 +3029,15 @@ HTML;
     public static function get_image($image, $size = ICON_SIZE_SMALL, $name = '')
     {
         return self::return_icon($image, $name, [], $size);
+    }
+
+    public static function returnHeaderWithPercentage($header, $percentage)
+    {
+        $percentHtml = sprintf(
+            get_lang('XPercent'),
+            round($percentage, 2)
+        );
+
+        return "$header<br><small>$percentHtml</small>";
     }
 }

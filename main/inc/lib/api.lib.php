@@ -47,6 +47,7 @@ define('COURSE_TUTOR', 16); // student is tutor of a course (NOT in session)
 define('STUDENT_BOSS', 17); // student is boss
 define('INVITEE', 20);
 define('HRM_REQUEST', 21); //HRM has request for vinculation with user
+define('COURSE_EXLEARNER', 22);
 
 // Table of status
 $_status_list[COURSEMANAGER] = 'teacher'; // 1
@@ -519,6 +520,10 @@ define('ANNOTATION', 20);
 define('READING_COMPREHENSION', 21);
 define('MULTIPLE_ANSWER_TRUE_FALSE_DEGREE_CERTAINTY', 22);
 define('UPLOAD_ANSWER', 23);
+define('MATCHING_GLOBAL', 24);
+define('MATCHING_DRAGGABLE_GLOBAL', 25);
+define('HOT_SPOT_GLOBAL', 26);
+define('FILL_IN_BLANKS_GLOBAL', 27);
 
 define('EXERCISE_CATEGORY_RANDOM_SHUFFLED', 1);
 define('EXERCISE_CATEGORY_RANDOM_ORDERED', 2);
@@ -2828,8 +2833,13 @@ function api_get_session_visibility(
 
     // I don't care the session visibility.
     if (empty($row['access_start_date']) && empty($row['access_end_date'])) {
+
         // Session duration per student.
         if (isset($row['duration']) && !empty($row['duration'])) {
+            if (api_get_configuration_value('session_coach_access_after_duration_end') == true && api_is_teacher()) {
+                return SESSION_AVAILABLE;
+            }
+
             $duration = $row['duration'] * 24 * 60 * 60;
             $courseAccess = CourseManager::getFirstCourseAccessPerSessionAndUser($session_id, $userId);
 
@@ -5051,6 +5061,9 @@ function languageCodeToCountryIsoCodeForFlags($languageIsoCode)
             break;
         case 'uk': // Ukraine
             $country = 'ua';
+            break;
+        case 'vi': // Vietnam - GH#4231
+            $country = 'vn';
             break;
         case 'zh-TW':
         case 'zh':
@@ -9371,6 +9384,7 @@ function api_mail_html(
     }
     $mailView->assign('mail_header_style', api_get_configuration_value('mail_header_style'));
     $mailView->assign('mail_content_style', api_get_configuration_value('mail_content_style'));
+    $mailView->assign('include_ldjson', (empty($platform_email['EXCLUDE_JSON']) ? true : false));
     $layout = $mailView->get_template('mail/mail.tpl');
     $mail->Body = $mailView->fetch($layout);
 
@@ -10196,4 +10210,24 @@ function api_protect_webservices()
         echo "To enable, add \$_configuration['disable_webservices'] = true; in configuration.php";
         exit;
     }
+}
+
+function api_filename_has_blacklisted_stream_wrapper(string $filename)
+{
+    if (strpos($filename, '://') > 0) {
+        $wrappers = stream_get_wrappers();
+        $allowedWrappers = ['http', 'https', 'file'];
+
+        foreach ($wrappers as $wrapper) {
+            if (in_array($wrapper, $allowedWrappers)) {
+                continue;
+            }
+
+            if (stripos($filename, $wrapper.'://') === 0) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }

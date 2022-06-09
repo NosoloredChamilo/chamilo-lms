@@ -1598,8 +1598,8 @@ function getWorkListTeacherQuery(
             $whereCondition
         ORDER BY `$column` $direction";
 
-    if ($start != 0 && $limit != 0) {
-        $sql .= ' LIMIT $start, $limit';
+    if (!empty($start) && !empty($limit)) {
+        $sql .= " LIMIT $start, $limit";
     }
 
     return Database::query($sql);
@@ -2376,6 +2376,11 @@ function get_work_user_list(
                     $work['qualification'] = $qualification_string.$feedback;
                 } else {
                     $work['qualification'] = $qualification_string.$feedback.$hasCorrection;
+                }
+
+                if (empty($work['qualificator_id'])) {
+                    $finalScore = '?? / '.$work_data['qualification'];
+                    $work['qualification'] = Display::label($finalScore, 'warning');
                 }
 
                 $work['qualification_only'] = $qualification_string;
@@ -4498,13 +4503,15 @@ function setWorkUploadForm($form, $uploadFormType = 0)
             break;
         case 2:
             // Only file.
-            $form->addElement(
+            /*$form->addElement(
                 'file',
                 'file',
                 get_lang('UploadADocument'),
                 'size="40" onchange="updateDocumentTitle(this.value)"'
             );
             $form->addProgress();
+            */
+            $form->addElement('BigUpload', 'file', get_lang('UploadADocument'), ['id' => 'bigUploadFile', 'data-origin' => 'work']);
             $form->addRule('file', get_lang('ThisFieldIsRequired'), 'required');
             break;
     }
@@ -4529,7 +4536,7 @@ function uploadWork($my_folder_data, $_course, $isCorrection = false, $workInfo 
 
     if (empty($file['size'])) {
         return [
-            'error' => Display:: return_message(
+            'error' => Display::return_message(
                 get_lang('UplUploadFailedSizeIsZero'),
                 'error'
             ),
@@ -4588,13 +4595,21 @@ function uploadWork($my_folder_data, $_course, $isCorrection = false, $workInfo 
 
     // If we come from the group tools the groupid will be saved in $work_table
     if (is_dir($updir.$curdirpath) || empty($curdirpath)) {
-        $result = move_uploaded_file(
-            $file['tmp_name'],
-            $updir.$curdirpath.'/'.$new_file_name
-        );
+        if (isset($file['copy_file'])) {
+            $result = copy(
+                $file['tmp_name'],
+                $updir.$curdirpath.'/'.$new_file_name
+            );
+            unlink($file['tmp_name']);
+        } else {
+            $result = move_uploaded_file(
+                $file['tmp_name'],
+                $updir.$curdirpath.'/'.$new_file_name
+            );
+        }
     } else {
         return [
-            'error' => Display :: return_message(
+            'error' => Display::return_message(
                 get_lang('FolderDoesntExistsInFileSystem'),
                 'error'
             ),
