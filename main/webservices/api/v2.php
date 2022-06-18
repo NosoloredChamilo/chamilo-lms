@@ -106,7 +106,8 @@ try {
             $restResponse->setData(['status' => true]);
             break;
         case Rest::GET_USER_MESSAGES_SENT:
-            $messages = $restApi->getUserSentMessages();
+            $lastMessageId = isset($_POST['last']) ? (int) $_POST['last'] : 0;
+            $messages = $restApi->getUserSentMessages($lastMessageId);
             $restResponse->setData($messages);
             break;
         case Rest::GET_COUNT_NEW_MESSAGES:
