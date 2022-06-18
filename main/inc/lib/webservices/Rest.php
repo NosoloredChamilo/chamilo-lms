@@ -894,11 +894,15 @@ class Rest extends WebService
         $postsInfo = getPosts($forumInfo, $threadInfo['iid'], 'ASC');
 
         foreach ($postsInfo as $postInfo) {
+            $avatar = display_user_image($postInfo['user_id'], $postInfo['poster_name'], ' ');
+
             $thread['posts'][] = [
                 'id' => $postInfo['iid'],
                 'title' => $postInfo['post_title'],
                 'text' => $postInfo['post_text'],
                 'author' => api_get_person_name($postInfo['firstname'], $postInfo['lastname']),
+                'avatar' => $avatar,
+                'indent_cnt' => $postInfo['indent_cnt'],
                 'date' => api_convert_and_format_date($postInfo['post_date'], DATE_TIME_FORMAT_LONG_24H),
                 'parentId' => $postInfo['post_parent_id'],
                 'attachments' => getAttachedFiles(
