@@ -999,6 +999,7 @@ class Rest extends WebService
             'fullName' => UserManager::formatUserFullName($this->user),
             'username' => $this->user->getUsername(),
             'officialCode' => $this->user->getOfficialCode(),
+            'email' => $this->user->getEmail(),
             'phone' => $this->user->getPhone(),
             'extra' => [],
         ];
