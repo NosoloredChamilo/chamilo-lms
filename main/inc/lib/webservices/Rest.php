@@ -855,13 +855,41 @@ class Rest extends WebService
         $threads = get_threads($forumInfo['iid'], $this->course->getId(), $sessionId);
 
         foreach ($threads as $thread) {
+            $authorAvatar = display_user_image($postInfo['user_id'], $postInfo['poster_name'], ' ');
+
+            $notifyIcon = "notification_mail_na.png";
+            if (is_array(
+                isset($_SESSION['forum_notification']['thread']) ? $_SESSION['forum_notification']['thread'] : null
+                )
+            ) {
+                if (in_array($thread['thread_id'], $_SESSION['forum_notification']['thread'])) {
+                    $notifyIcon = "notification_mail.png";
+                }
+            }
+
+            $lastPosterName = get_lang('Anonymous');
+            $lastPostDate = "";
+            $lastPostInfo = get_post_information($thread['thread_last_post']);
+            if (!empty($lastPostInfo)) {
+                $lastPostDate = $lastPostInfo['post_date'];
+                $lastPoster = api_get_user_info($lastPostInfo['poster_id']);
+                if(!empty($lastPoster)) {
+                    $lastPosterName = $lastPoster['complete_name'];
+                }
+            }
+
             $forum['threads'][] = [
                 'id' => $thread['iid'],
+                'insertDate' => api_convert_and_format_date($thread['insert_date'], DATE_TIME_FORMAT_LONG_24H),
                 'title' => $thread['thread_title'],
                 'lastEditDate' => api_convert_and_format_date($thread['lastedit_date'], DATE_TIME_FORMAT_LONG_24H),
+                'lastPostDate' => api_convert_and_format_date($lastPostDate, DATE_TIME_FORMAT_LONG_24H),
+                'lastPosterName' => $lastPosterName,
                 'numberOfReplies' => $thread['thread_replies'],
                 'numberOfViews' => $thread['thread_views'],
                 'author' => api_get_person_name($thread['firstname'], $thread['lastname']),
+                'notifyIcon' => $notifyIcon,
+                'authorAvatar' => $authorAvatar,
             ];
         }
 
