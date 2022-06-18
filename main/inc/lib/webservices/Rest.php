@@ -32,6 +32,7 @@ class Rest extends WebService
     public const POST_USER_MESSAGE_READ = 'user_message_read';
     public const POST_USER_MESSAGE_UNREAD = 'user_message_unread';
     public const SAVE_USER_MESSAGE = 'save_user_message';
+    public const SAVE_USER_MESSAGE_REPLY = 'save_user_message_reply';
     public const GET_MESSAGE_USERS = 'message_users';
     public const VIEW_MESSAGE = 'view_message';
 
@@ -1295,6 +1296,42 @@ class Rest extends WebService
         foreach ($receivers as $userId) {
             MessageManager::send_message($userId, $subject, $text);
         }
+
+        return [
+            'sent' => true,
+        ];
+    }
+
+    /**
+     * @param string $messageId
+     * @param string $subject
+     * @param string $text
+     * @param string $quoted
+     *
+     * @return array
+     */
+    public function saveUserMessageReply($messageId, $subject, $text, $quoted)
+    {
+        $originalMessage = MessageManager::get_message_by_id($messageId);
+
+        if(empty($originalMessage)) {
+            throw new Exception(get_lang('InvalidMessageId'));
+        }
+
+        $originalMessageText = '';
+
+        if ($quoted) {
+            $user_reply_info = api_get_user_info($originalMessage['user_sender_id']);
+            $originalMessageText .= '<p><br/></p>'.sprintf(
+                get_lang('XWroteY'),
+                $user_reply_info['complete_name'],
+                Security::filter_terms($originalMessage['content'])
+            );
+        }
+
+        $reply = $originalMessageText.' '.$text;
+
+        MessageManager::send_message($originalMessage['user_sender_id'], $subject, $reply);
 
         return [
             'sent' => true,

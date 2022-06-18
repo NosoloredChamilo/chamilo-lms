@@ -149,6 +149,20 @@ try {
             $data = $restApi->saveUserMessage($subject, $text, $receivers);
             $restResponse->setData($data);
             break;
+        case Rest::SAVE_USER_MESSAGE_REPLY:
+            if (
+                empty($_POST['message_id']) || empty($_POST['text'])
+            ) {
+                throw new Exception(get_lang('NoData'));
+            }
+
+            $messageId = !empty($_POST['message_id']) ? $_POST['message_id'] : null;
+            $quoted = !empty($_POST['quoted']) ? $_POST['quoted'] : null;
+            $subject = !empty($_POST['subject']) ? $_POST['subject'] : null;
+            $text = !empty($_POST['text']) ? $_POST['text'] : null;
+            $data = $restApi->saveUserMessageReply($messageId, $subject, $text, $quoted);
+            $restResponse->setData($data);
+            break;
         case Rest::GET_MESSAGE_USERS:
             $search = !empty($_REQUEST['q']) ? $_REQUEST['q'] : null;
             if (!$search || strlen($search) < 2) {
