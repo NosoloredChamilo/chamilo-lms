@@ -321,9 +321,9 @@ class Rest extends WebService
     /**
      * @return array
      */
-    public function getUserReceivedMessages()
+    public function getUserReceivedMessages($lastMessageId = 0)
     {
-        $lastMessages = MessageManager::getReceivedMessages($this->user->getId(), 0);
+        $lastMessages = MessageManager::getReceivedMessages($this->user->getId(), $lastMessageId);
         $messages = [];
 
         $webPath = api_get_path(WEB_PATH);
@@ -349,7 +349,8 @@ class Rest extends WebService
                 'content' => str_replace('src="/"', $webPath, $message['content']),
                 'hasAttachments' => $hasAttachments,
                 'attachmentList' => $attachmentList,
-                'url' => '',
+                'url' => api_get_path(WEB_CODE_PATH).'messages/view_message.php?'
+                    .http_build_query(['type' => 1, 'id' => $message['id']]),
             ];
         }
 

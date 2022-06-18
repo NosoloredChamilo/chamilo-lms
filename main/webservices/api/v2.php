@@ -95,7 +95,8 @@ try {
             $restResponse->setData($messages);
             break;
         case Rest::GET_USER_MESSAGES_RECEIVED:
-            $messages = $restApi->getUserReceivedMessages();
+            $lastMessageId = isset($_POST['last']) ? (int) $_POST['last'] : 0;
+            $messages = $restApi->getUserReceivedMessages($lastMessageId);
             $restResponse->setData($messages);
             break;
         case Rest::DELETE_USER_MESSAGE:
