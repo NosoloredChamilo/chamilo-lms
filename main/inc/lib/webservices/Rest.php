@@ -71,6 +71,7 @@ class Rest extends WebService
     public const GET_WORK_STUDENTS_WITHOUT_PUBLICATIONS = 'get_work_students_without_publications';
     public const GET_WORK_USERS = 'get_work_users';
     public const GET_WORK_STUDENT_LIST = 'get_work_student_list';
+    public const SAVE_WORK_USER = 'save_work_user';
     public const PUT_WORK_STUDENT_ITEM_VISIBILITY = 'put_course_work_visibility';
     public const DELETE_WORK_STUDENT = 'delete_work_student';
     public const DELETE_WORK_STUDENT_ITEM = 'delete_work_student_item';
@@ -2765,6 +2766,22 @@ class Rest extends WebService
             },
             $works
         );
+    }
+
+    public function saveWorkUser(int $workId, int $studentId): bool
+    {
+        Event::event_access_tool(TOOL_STUDENTPUBLICATION);
+
+        require_once api_get_path(SYS_CODE_PATH).'work/work.lib.php';
+
+        $data = getUserToWork($studentId, $workId, $course);
+        if (empty($data)) {
+            addUserToWork($studentId, $workId, $course);
+        } else {
+            return false;
+        }
+
+        return true;
     }
 
     /**

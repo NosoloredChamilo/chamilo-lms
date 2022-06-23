@@ -390,6 +390,21 @@ try {
                 $restApi->getWorkStudentList((int) $_GET['work'])
             );
             break;
+        case Rest::SAVE_WORK_USER:
+            if (!isset($_POST['work'], $_POST['student'])) {
+                throw new Exception(get_lang('ActionNotAllowed'));
+            }
+
+            if (!api_is_allowed_to_edit() && !api_is_coach()) {
+                throw new Exception(get_lang('NotAllowed'));
+            }
+
+            $restResponse->setData(
+                [
+                    'message' => $restApi->saveWorkUser((int) $_POST['work'], (int) $_POST['student']),
+                ]
+            );
+            break;
         case Rest::PUT_WORK_STUDENT_ITEM_VISIBILITY:
             if (!isset($_POST['status'], $_POST['work'])) {
                 throw new Exception(get_lang('ActionNotAllowed'));
