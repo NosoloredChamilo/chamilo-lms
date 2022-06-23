@@ -365,7 +365,7 @@ try {
             );
             break;
         case Rest::GET_WORK_USERS:
-            if (!isset($_GET['work'])) {
+            if (!isset($_POST['work'])) {
                 throw new Exception(get_lang('ActionNotAllowed'));
             }
 
@@ -374,7 +374,7 @@ try {
             }
 
             $restResponse->setData(
-                $restApi->getWorkUsers((int) $_GET['work'])
+                $restApi->getWorkUsers((int) $_POST['work'])
             );
             break;
         case Rest::GET_WORK_STUDENT_LIST:
