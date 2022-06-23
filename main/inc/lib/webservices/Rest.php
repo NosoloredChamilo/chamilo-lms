@@ -2788,7 +2788,7 @@ class Rest extends WebService
         }
     }
 
-    public function deleteWorkStudent(int $workId, int $studentId)
+    public function deleteWorkStudent(int $workId, int $studentId) : bool
     {
         Event::event_access_tool(TOOL_STUDENTPUBLICATION);
 
