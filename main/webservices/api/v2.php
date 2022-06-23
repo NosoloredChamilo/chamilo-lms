@@ -406,6 +406,21 @@ try {
 
             $restResponse->setData(['status' => $data]);
             break;
+        case Rest::DELETE_WORK_STUDENT:
+            if (!isset($_POST['work']) || !isset($_POST['student'])) {
+                throw new Exception(get_lang('ActionNotAllowed'));
+            }
+
+            if (!api_is_allowed_to_edit() && !api_is_coach()) {
+                throw new Exception(get_lang('NotAllowed'));
+            }
+
+            $restResponse->setData(
+                [
+                    'message' => $restApi->deleteWorkStudent((int) $_POST['work'], (int) $_POST['student']),
+                ]
+            );
+            break;
         case Rest::DELETE_WORK_STUDENT_ITEM:
             if (!isset($_POST['work'])) {
                 throw new Exception(get_lang('ActionNotAllowed'));

@@ -72,6 +72,7 @@ class Rest extends WebService
     public const GET_WORK_USERS = 'get_work_users';
     public const GET_WORK_STUDENT_LIST = 'get_work_student_list';
     public const PUT_WORK_STUDENT_ITEM_VISIBILITY = 'put_course_work_visibility';
+    public const DELETE_WORK_STUDENT = 'delete_work_student';
     public const DELETE_WORK_STUDENT_ITEM = 'delete_work_student_item';
     public const DELETE_WORK_CORRECTIONS = 'delete_work_corrections';
     public const DOWNLOAD_WORK_FOLDER = 'download_work_folder';
@@ -2785,6 +2786,17 @@ class Rest extends WebService
             default:
                 throw new Exception(get_lang('ActionNotAllowed'));
         }
+    }
+
+    public function deleteWorkStudent(int $workId, int $studentId)
+    {
+        Event::event_access_tool(TOOL_STUDENTPUBLICATION);
+
+        require_once api_get_path(SYS_CODE_PATH).'work/work.lib.php';
+
+        deleteUserToWork($studentId, $workId, $course);
+
+        return true;
     }
 
     public function deleteWorkStudentItem(int $workId): string
